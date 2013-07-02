@@ -137,12 +137,21 @@ function! QueryCommandComplete(findstart, base)
     let cur_line = getline(line('.'))
 
     " TODO: Figure out a way to handle multiline
-    if cur_line =~ g:qcc_pattern
+    " if cur_line =~ g:qcc_pattern
         return s:GenerateCompletions(a:findstart, a:base)
-    endif
+    " endif
 endfunction
 
 " only set omnifunc if not already set
 autocmd FileType mail if !len(&omnifunc) | setlocal omnifunc=QueryCommandComplete | endif
+" return a litteral tab if line is just space
+function! CleverTab()
+   if strpart( getline('.'), 0, col('.')-1 ) =~ '^\s*$'
+      return "\<Tab>"
+   else
+      return "\<C-X>\<C-O>"
+   endif
+endfunction
+autocmd FileType mail inoremap <Tab> <C-R>=CleverTab()<CR>
 
 let &cpo = s:save_cpo
